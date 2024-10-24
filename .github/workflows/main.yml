@@ -64,16 +64,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y python3-gunicorn python3-flask
 
-            # Check if the port is in use and kill the process if needed
-            PORT=${{ secrets.STAGING_PORT }}
-            PID=$(sudo lsof -t -i :$PORT)
-            if [ -n "$PID" ]; then
-              echo "Killing process $PID using port $PORT"
-              sudo kill -9 $PID
-            else
-              echo "No process is using port $PORT"
-            fi
-            
             # Start Gunicorn to serve the Flask application
             /usr/bin/gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.STAGING_PORT }}
           EOF
@@ -111,16 +101,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y python3-gunicorn python3-flask
 
-            # Check if the port is in use and kill the process if needed
-            PORT=${{ secrets.PRODUCTION_PORT }}
-            PID=$(sudo lsof -t -i :$PORT)
-            if [ -n "$PID" ]; then
-              echo "Killing process $PID using port $PORT"
-              sudo kill -9 $PID
-            else
-              echo "No process is using port $PORT"
-            fi
-            
             # Start Gunicorn to serve the Flask application
             /usr/bin/gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.PRODUCTION_PORT }}
           EOF
