@@ -24,7 +24,7 @@ jobs:
       - name: Install dependencies globally
         run: |
           python -m pip install --upgrade pip
-          pip install --user -r requirements.txt  # Install dependencies globally
+          pip install --user -r requirements.txt  # Install dependencies globally on the GitHub runner
 
       - name: Run unit tests
         run: |
@@ -50,13 +50,21 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.STAGING_EC2_USERNAME }}@${{ secrets.STAGING_EC2_HOST }} << 'EOF'
             set -e
             echo "Starting deployment to STAGING..."
+            
+            # Remove the directory if it exists
             if [ -d "/home/${{ secrets.STAGING_EC2_USERNAME }}/SimpleFlaskApp" ]; then
               rm -rf /home/${{ secrets.STAGING_EC2_USERNAME }}/SimpleFlaskApp
             fi
+            
+            # Clone the repository
             git clone https://github.com/arpit1605/SimpleFlaskApp.git /home/${{ secrets.STAGING_EC2_USERNAME }}/SimpleFlaskApp
             cd /home/${{ secrets.STAGING_EC2_USERNAME }}/SimpleFlaskApp
-            python3 -m pip install --upgrade pip  # Ensure pip is upgraded
-            pip install --user -r requirements.txt  # Install dependencies globally
+            
+            # Update and install dependencies using apt
+            sudo apt-get update
+            sudo apt-get install -y python3-gunicorn python3-flask
+
+            # Start Gunicorn to serve the Flask application
             gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.STAGING_PORT }}
           EOF
         env:
@@ -79,13 +87,21 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.PRODUCTION_EC2_USERNAME }}@${{ secrets.PRODUCTION_EC2_HOST }} << 'EOF'
             set -e
             echo "Starting deployment to PRODUCTION..."
+            
+            # Remove the directory if it exists
             if [ -d "/home/${{ secrets.PRODUCTION_EC2_USERNAME }}/SimpleFlaskApp" ]; then
               rm -rf /home/${{ secrets.PRODUCTION_EC2_USERNAME }}/SimpleFlaskApp
             fi
+            
+            # Clone the repository
             git clone https://github.com/arpit1605/SimpleFlaskApp.git /home/${{ secrets.PRODUCTION_EC2_USERNAME }}/SimpleFlaskApp
             cd /home/${{ secrets.PRODUCTION_EC2_USERNAME }}/SimpleFlaskApp
-            python3 -m pip install --upgrade pip  # Ensure pip is upgraded
-            pip install --user -r requirements.txt  # Install dependencies globally
+            
+            # Update and install dependencies using apt
+            sudo apt-get update
+            sudo apt-get install -y python3-gunicorn python3-flask
+
+            # Start Gunicorn to serve the Flask application
             gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.PRODUCTION_PORT }}
           EOF
         env:
