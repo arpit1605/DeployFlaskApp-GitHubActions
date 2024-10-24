@@ -21,10 +21,10 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Install dependencies globally
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install --user -r requirements.txt  # Install dependencies globally
 
       - name: Run unit tests
         run: |
@@ -55,8 +55,8 @@ jobs:
             fi
             git clone https://github.com/arpit1605/SimpleFlaskApp.git /home/${{ secrets.STAGING_EC2_USERNAME }}/SimpleFlaskApp
             cd /home/${{ secrets.STAGING_EC2_USERNAME }}/SimpleFlaskApp
-            python3 -m venv venv && source venv/bin/activate
-            pip install -r requirements.txt
+            python3 -m pip install --upgrade pip  # Ensure pip is upgraded
+            pip install --user -r requirements.txt  # Install dependencies globally
             gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.STAGING_PORT }}
           EOF
         env:
@@ -84,8 +84,8 @@ jobs:
             fi
             git clone https://github.com/arpit1605/SimpleFlaskApp.git /home/${{ secrets.PRODUCTION_EC2_USERNAME }}/SimpleFlaskApp
             cd /home/${{ secrets.PRODUCTION_EC2_USERNAME }}/SimpleFlaskApp
-            python3 -m venv venv && source venv/bin/activate
-            pip install -r requirements.txt
+            python3 -m pip install --upgrade pip  # Ensure pip is upgraded
+            pip install --user -r requirements.txt  # Install dependencies globally
             gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.PRODUCTION_PORT }}
           EOF
         env:
