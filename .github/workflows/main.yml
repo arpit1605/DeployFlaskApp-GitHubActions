@@ -65,7 +65,7 @@ jobs:
             sudo apt-get install -y python3-gunicorn python3-flask
 
             # Start Gunicorn to serve the Flask application
-            gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.STAGING_PORT }}
+            /usr/bin/gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.STAGING_PORT }}
           EOF
         env:
           STAGING_EC2_HOST: ${{ secrets.STAGING_EC2_HOST }}
@@ -102,7 +102,7 @@ jobs:
             sudo apt-get install -y python3-gunicorn python3-flask
 
             # Start Gunicorn to serve the Flask application
-            gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.PRODUCTION_PORT }}
+            /usr/bin/gunicorn --workers 3 app:app --bind 0.0.0.0:${{ secrets.PRODUCTION_PORT }}
           EOF
         env:
           PRODUCTION_EC2_HOST: ${{ secrets.PRODUCTION_EC2_HOST }}
